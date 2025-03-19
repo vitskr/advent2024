@@ -1,13 +1,13 @@
 mod reader;
 mod solutions;
 
-use reader::read;
+use reader::{read_2};
 
-use solutions::day1_1::run;
+use solutions::day2_2::run;
 
 fn main() {
-    let (list1, list2) = read(include_str!("inputs/day1_a.txt"));
-    let result = run(list1, list2);
+    let input = read_2(include_str!("inputs/day2_1.txt"));
+    let result = run(input);
 
     println!("Result: {}", result);
 }

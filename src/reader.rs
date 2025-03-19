@@ -25,7 +25,7 @@ pub fn read_2(input: &'static str) -> Vec<Vec<i32>> {
                 .collect::<Vec<_>>()
         })
         .collect::<Vec<_>>();
-        
+
     result
 }
 
@@ -36,8 +36,7 @@ mod tests {
 
     #[test]
     fn test_read_2() {
-        let v1 = 
-            "7 6
+        let v1 = "7 6
              1 2";
 
         let result = read_2(v1);
