@@ -1,38 +1,69 @@
-use itertools::{concat, Itertools};
+use itertools::{Itertools, concat};
+
+use super::day2_1;
 
 pub fn is_safe(input: &Vec<i32>) -> bool {
-    let diffs = input
-        .iter()
-        .tuple_windows()        
-        .map(|(a, b)| b -a);
-
-    let result = diffs.fold((None::<i32>, 0), | (p, count), n | {
-        let previous_signum = match p {
-            Some(signum) => signum,
-            None => n.signum(),
-        };
-
-        if n.abs() > 3 {
-            return (Some(previous_signum), count + 1)
-        }
-
-        if previous_signum != n.signum() {
-            return (Some(previous_signum), count + 1)
-        }
-
-        (Some(previous_signum), count)
-    });
-
-    match result {
-        (_, wrong) => wrong <= 1,
-        _ => false,
+    if day2_1::is_safe(input) {
+        return true;
     }
+
+    for i in 0..input.len() {
+        let mut copy = input.clone();
+        copy.remove(i);
+
+        if day2_1::is_safe(&copy) {
+            return true;
+        }
+    }
+
+    false
 }
+// pub fn is_safe(input: &Vec<i32>) -> bool {
+//     let mut errors = 0;
+//     let mut signum : Option<i32> = None;
+
+//     let mut i = 0;
+//     let mut y = 1;
+
+//     while y < input.len() {
+//         if errors > 1 {
+//             break;
+//         }
+
+//         let distance = input[i] - input[y];
+
+//         let previous_signum = match signum {
+//             Some(x) => x,
+//             None => distance.signum()
+//         };
+
+//         if distance.signum() != previous_signum ||
+//             distance.abs() > 3
+//         {
+//             errors += 1;
+//             y += 1;
+//             continue;
+//         }
+
+//         signum = Some(distance.signum());
+
+//         i += 1;
+//         y += 1;
+//     }
+
+//     errors <= 1
+// }
 
 pub fn run(input: Vec<Vec<i32>>) -> i32 {
-    input
-        .iter()
-        .fold(0, |c, row| if is_safe(row) { c + 1 } else { c })
+    let mut safe = 0;
+
+    for row in &input {
+        if is_safe(&row) {
+            safe += 1;
+        }
+    }
+
+    safe
 }
 
 #[cfg(test)]
@@ -48,7 +79,7 @@ mod tests {
             "Safe without removing any level"
         );
     }
-    
+
     #[test]
     fn test_is_safe_unsafe_large_increase() {
         assert_eq!(
@@ -57,7 +88,7 @@ mod tests {
             "Unsafe regardless of which level is removed"
         );
     }
-    
+
     #[test]
     fn test_is_safe_unsafe_large_decrease() {
         assert_eq!(
@@ -66,7 +97,7 @@ mod tests {
             "Unsafe regardless of which level is removed"
         );
     }
-    
+
     #[test]
     fn test_is_safe_safe_remove_second_level_3() {
         assert_eq!(
@@ -75,22 +106,31 @@ mod tests {
             "Safe by removing the second level, 3"
         );
     }
-    
+
     #[test]
-    fn test_is_safe_safe_remove_second_level_4() {
+    fn test_is_safe_safe_remove_third_level_4() {
         assert_eq!(
             is_safe(&vec![8, 6, 4, 4, 1]),
             true,
-            "Safe by removing the second level, 4"
+            "Safe by removing the third level, 4"
         );
     }
-    
+
     #[test]
     fn test_is_safe_safe_remove_second_level() {
         assert_eq!(
             is_safe(&vec![1, 3, 6, 7, 9]),
             true,
-            "Safe by removing the second level"
+            "Safe without removing any level"
+        );
+    }
+
+    #[test]
+    fn test_is_safe_by_removing_signum_change() {
+        assert_eq!(
+            is_safe(&vec![6, 10, 5, 3, 2]),
+            true,
+            "Safe by removing second level, chaning signum"
         );
     }
 
