@@ -14,18 +14,52 @@ pub fn part1(input: &str) -> i32 {
         .sum()
 }
 
+enum Operation {
+    Mul(i32),
+    Do,
+    Dont,
+}
+
 pub fn part2(input: &str) -> i32 {
-    let re = RegexSet::new(&[
-        r"mul\((?<fst>\d{1,3}),(?<snd>\d{1,3})\)",
-        r"do\(\)",
-        r"don\'t\(\)"
-        ]).unwrap();
-    
-    let a: Vec<_> = re.matches(input).into_iter().collect();
+    let re =
+        Regex::new(r"(mul\((?<fst>\d{1,3}),(?<snd>\d{1,3})\)|(?<do>do\(\))|(?<dont>don't\(\)))")
+            .unwrap();
 
-    println!("{:?}", a);
+    let operations = re.captures_iter(input).map(|c| {
+        if c.name("do").is_some() {
+            return Operation::Do;
+        }
 
-    0
+        if c.name("dont").is_some() {
+            return Operation::Dont;
+        }
+
+        let fst = c.name("fst").unwrap().as_str().parse::<i32>().unwrap();
+        let snd = c.name("snd").unwrap().as_str().parse::<i32>().unwrap();
+
+        Operation::Mul(fst * snd)
+    });
+
+    let mut current_multilplier = 1;
+    let mut sum = 0;
+
+    for op in operations {
+        match op {
+            Operation::Mul(x) => {
+                sum += current_multilplier * x;
+            }
+            Operation::Do => {
+                current_multilplier = 1;
+            }
+            Operation::Dont => {
+                current_multilplier = 0;
+            }
+        }
+    }
+
+    println!("{:?}", sum);
+
+    sum
 }
 
 #[cfg(test)]
